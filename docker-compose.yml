@@ -1,0 +1,38 @@
+version: '2'
+services: 
+  contextos-mysql:
+    container_name: contextos-mysql
+    build: ./docker/mysql
+    expose:
+      - "3306"
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=contextos123
+      - MYSQL_DATABASE=contextos
+      - MYSQL_USER=contextos
+      - MYSQL_PASSWORD=contextos123
+    volumes:
+      - ./docker/mysql/data/mysql:/var/lib/mysql
+      - ./docker/mysql/data/data:/var/data
+    networks:
+      contextos_net:
+        ipv4_address: 172.27.0.3
+  contextos-api:
+    container_name: contextos-api
+    build: ./docker/php  
+    ports:
+     - "8000:8000"
+    volumes:
+     - ./:/opt/contextos-api
+    networks:
+      contextos_net:
+        ipv4_address: 172.27.0.4
+    command: php artisan serve --host 0.0.0.0
+
+networks:
+    contextos_net:
+        driver: bridge
+        ipam:
+          config:
+          - subnet: 172.27.0.0/24
